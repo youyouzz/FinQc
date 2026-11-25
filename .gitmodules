@@ -1,0 +1,4 @@
+[submodule "TradeMaster"]
+	path = TradeMaster
+	url = https://github.com/Obscurepawn/TradeMaster.git
+	branch = finqc

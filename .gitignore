@@ -1,0 +1,22 @@
+# 数据：几十 GB，不进 git（raw/macro/text 需另行备份）
+/data/
+/artifacts/
+
+# 密钥
+.env
+.env.*
+!.env.example
+
+# Python / 工具
+.venv/
+__pycache__/
+*.py[cod]
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# 系统
+.DS_Store
