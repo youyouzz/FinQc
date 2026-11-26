@@ -19,3 +19,12 @@ packages = ["finqc"]
 
 [dependency-groups]
 dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+extend-exclude = ["skills"]
+
+[tool.mypy]
+exclude = ["^skills/"]
