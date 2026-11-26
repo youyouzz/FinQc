@@ -7,7 +7,7 @@ FinQc 是私有研究系统：A 股、港股、美股日频数据下载到本地
 | 路径 | 职责 | 规则 |
 |---|---|---|
 | `TradeMaster/` | 回测引擎（submodule，指向自己 fork 的 `finqc` 分支） | 进入该目录工作时遵守 `TradeMaster/AGENTS.md`。只放**通用**引擎能力（数据适配器、市场规则、快照、接口），按可被上游接受的标准写（英文文档、测试、spec）。**绝不放策略、台账、AI 或任何私有内容**——fork 是公开的。 |
-| `finqc/ingest/` | 数据下载调度与增量更新 | 调用引擎内的 Tushare / IndexOne 适配器，不重复实现。 |
+| `finqc/ingest/` | 数据下载调度与增量更新；质量检查与清洗 | 调用引擎内的 Tushare / IndexOne 适配器，不重复实现。每次下载后跑 `quality`、`clean`，见 `docs/data-quality.md`。 |
 | `finqc/macro/` `finqc/risk/` | 宏观状态模型、风控规则 | 必须是确定性规则，可回测。 |
 | `finqc/strategies/core/` | 策略核心：纯函数（as-of 数据 → 目标权重） | 不依赖任何引擎 API。 |
 | `finqc/strategies/adapters/` | 引擎适配器（`trademaster.py`，将来 `qc.py`） | 只做薄包装。 |
@@ -33,7 +33,8 @@ FinQc 是私有研究系统：A 股、港股、美股日频数据下载到本地
 ## 数据规则
 
 - `data/market/{cn,hk,us}`：行情与财务（Tushare：A 股、港股；IndexOne：美股）。`data/macro`：宏观（保留修订版本 / vintage）。`data/fx`：汇率。`data/text`：新闻与政策文本及索引。
-- `market/*/raw`、`macro/`、`text/` 不可重建，需备份；`snapshots/`、`runs/` 可由原始数据重建，可清理。
+- `market/*/raw`、`macro/`、`text/` 不可重建，需备份；`market/*/clean`、`snapshots/`、`runs/` 可由原始数据重建，可清理。港股 / 美股的原始数据是 `indexone*/`、`tushare/` 和 `eod_status*.jsonl`。
+- 回测只用清洗后的数据：港股 / 美股读 `clean/`，A 股套用 `clean/exclusions.parquet`；`price_imprecise` / `adj_imprecise` 行不进入信号。
 - 每条实验记录写明 TradeMaster commit、数据快照 `snapshot_id` 与策略版本，保证可复现。
 - 密钥（`TUSHARE_TOKEN`、`INDEXONE_API_KEY`）只从环境变量读取，不写入代码、日志、manifest 或台账。
 
